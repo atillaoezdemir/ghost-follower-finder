@@ -331,7 +331,13 @@
 
     <section id="upload-panel">
       <div class="dropzone" id="dropzone">
-        <input class="file-input-hidden" type="file" id="upload-input" multiple webkitdirectory directory>
+        <input
+          class="file-input-hidden"
+          type="file"
+          id="upload-input"
+          multiple
+          accept=".zip,.json,application/zip,application/json"
+        >
         <div class="formats" aria-hidden="true">
           <span>.zip</span>
           <span>followers_1.json</span>
@@ -381,7 +387,7 @@
           DYI_URL +
           '" target="_blank" rel="noopener noreferrer">accounts center</a> → <strong>bilgilerini dışa aktar</strong> → format: <strong>JSON</strong> → followers ve following seç',
         step2:
-          "ister uğraşmadan direkt <code>.zip</code> yükle, ister yalnızca <code>followers_1.json</code> ile <code>following.json</code> dosyalarını yükle",
+          "ister uğraşmadan direkt <code>.zip</code> yükle, ister direkt <code>followers_1.json</code> ve <code>following.json</code> dosyalarını yükle",
         step3:
           "seni geri takip etmeyen ama senin takip ettiklerin listelenir — kolpalar birer birer ortaya çıkacak",
         upload: "yükle",
@@ -400,7 +406,7 @@
         errRead: 'dosya okunamadı: "{name}"',
         errParse: 'geçersiz json: "{name}"',
         errNotFound:
-          "<code>following.json</code> ve followers dosyası bulunamadı — export tam mı kontrol et",
+          "<code>following.json</code> ve <code>followers_1.json</code> bulunamadı — export tam mı kontrol et",
         errFollowingFormat: "<code>following.json</code> geçerli bir export gibi görünmüyor",
         resultEmpty: "herkes seni geri takip ediyor — kimsenin fanı değilsin, temiz kaçmışsın",
         resultHeading: "onların fanı olduğun hesaplar — geri takip yok",
@@ -418,7 +424,7 @@
           DYI_URL +
           '" target="_blank" rel="noopener noreferrer">accounts center</a> → <strong>export your information</strong> → choose <strong>JSON</strong> format → select followers and following',
         step2:
-          "either upload the <code>.zip</code> as-is, or upload only <code>followers_1.json</code> and <code>following.json</code>",
+          "either upload the <code>.zip</code> as-is, or upload directly <code>followers_1.json</code> and <code>following.json</code>",
         step3:
           "lists accounts you follow, who do not follow you back — the fakes will appear one by one",
         upload: "upload",
@@ -437,7 +443,7 @@
         errRead: 'could not read "{name}"',
         errParse: 'invalid json: "{name}"',
         errNotFound:
-          "could not find <code>following.json</code> and followers files — is the export complete?",
+          "could not find <code>following.json</code> and <code>followers_1.json</code> — is the export complete?",
         errFollowingFormat: "<code>following.json</code> does not look like a valid export",
         resultEmpty: "everyone follows you back — you're nobody's fan, clean list",
         resultHeading: "accounts that made you their fan — no follow back",
@@ -455,7 +461,7 @@
           DYI_URL +
           '" target="_blank" rel="noopener noreferrer">accounts center</a> → <strong>informationen exportieren</strong> (export your information) → format <strong>JSON</strong> → followers und following auswählen',
         step2:
-          "entweder die <code>.zip</code> direkt hochladen oder nur <code>followers_1.json</code> und <code>following.json</code>",
+          "entweder die <code>.zip</code> direkt hochladen oder direkt <code>followers_1.json</code> und <code>following.json</code>",
         step3:
           "listet konten, denen du folgst, die dir nicht zurückfolgen — die fakes kommen nacheinander ans licht",
         upload: "hochladen",
@@ -474,7 +480,7 @@
         errRead: 'datei konnte nicht gelesen werden: "{name}"',
         errParse: 'ungültiges json: "{name}"',
         errNotFound:
-          "<code>following.json</code> und followers-dateien nicht gefunden — export vollständig?",
+          "<code>following.json</code> und <code>followers_1.json</code> nicht gefunden — export vollständig?",
         errFollowingFormat: "<code>following.json</code> sieht nicht wie ein gültiger export aus",
         resultEmpty: "alle folgen dir zurück — du bist niemandes fan, saubere liste",
         resultHeading: "konten, die dich zu ihrem fan gemacht haben — kein zurückfolgen",
@@ -580,12 +586,18 @@
       return score;
     }
 
-    function isZipName(name) {
+    function isZipFile(name) {
       return name.toLowerCase().endsWith(".zip");
     }
 
-    function isJsonName(name) {
-      return name.toLowerCase().endsWith(".json");
+    function isAllowedJsonUpload(name) {
+      const base = name.toLowerCase();
+      return base === "following.json" || base === "followers_1.json";
+    }
+
+    function isAllowedZipJsonPath(path) {
+      const base = pathBase(path);
+      return base === "following.json" || /^followers_\d+\.json$/.test(base);
     }
 
     async function inflateDeflate(data) {
@@ -635,7 +647,7 @@
         const name = decoder.decode(bytes.subarray(offset + 46, offset + 46 + nameLen));
         offset += 46 + nameLen + extraLen + commentLen;
 
-        if (name.endsWith("/") || !isJsonName(name)) {
+        if (name.endsWith("/") || !isAllowedZipJsonPath(name)) {
           continue;
         }
 
@@ -660,74 +672,6 @@
       return textMap;
     }
 
-    function readAllDirectoryEntries(reader) {
-      return new Promise((resolve, reject) => {
-        const entries = [];
-
-        function readBatch() {
-          reader.readEntries(
-            (batch) => {
-              if (!batch.length) {
-                resolve(entries);
-                return;
-              }
-              entries.push(...batch);
-              readBatch();
-            },
-            reject
-          );
-        }
-
-        readBatch();
-      });
-    }
-
-    async function walkEntry(entry, prefix) {
-      if (entry.isFile) {
-        const file = await new Promise((resolve, reject) => {
-          entry.file(resolve, reject);
-        });
-        const path = normalizePath(prefix + file.name);
-        return [[path, file]];
-      }
-
-      if (!entry.isDirectory) {
-        return [];
-      }
-
-      const reader = entry.createReader();
-      const children = await readAllDirectoryEntries(reader);
-      const nested = await Promise.all(
-        children.map((child) => walkEntry(child, prefix + entry.name + "/"))
-      );
-      return nested.flat();
-    }
-
-    async function collectFromDataTransfer(dataTransfer) {
-      const items = [...dataTransfer.items].filter((item) => item.kind === "file");
-
-      if (items.length && typeof items[0].webkitGetAsEntry === "function") {
-        const entries = items.map((item) => item.webkitGetAsEntry()).filter(Boolean);
-        if (entries.some((entry) => entry.isDirectory)) {
-          const pairs = (await Promise.all(entries.map((entry) => walkEntry(entry, "")))).flat();
-          if (pairs.length) {
-            return collectFromPathFiles(pairs);
-          }
-        }
-      }
-
-      const files = [...dataTransfer.files];
-      if (files.length && files[0].webkitRelativePath) {
-        const pairs = files.map((file) => [
-          normalizePath(file.webkitRelativePath || file.name),
-          file,
-        ]);
-        return collectFromPathFiles(pairs);
-      }
-
-      return collectFromFileList(files);
-    }
-
     async function readFileAsText(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -737,40 +681,20 @@
       });
     }
 
-    async function collectFromPathFiles(pathFilePairs) {
-      const textMap = new Map();
-
-      for (const [path, file] of pathFilePairs) {
-        if (isZipName(file.name)) {
-          const nested = await unzipToTextMap(await file.arrayBuffer());
-          for (const [nestedPath, text] of nested) {
-            textMap.set(nestedPath, text);
-          }
-          continue;
-        }
-        if (isJsonName(path) || isJsonName(file.name)) {
-          textMap.set(path, await readFileAsText(file));
-        }
-      }
-
-      return textMap;
-    }
-
-    async function collectFromFileList(fileList) {
+    async function collectFromFiles(fileList) {
       const textMap = new Map();
 
       for (const file of fileList) {
-        if (isZipName(file.name)) {
+        const name = file.name;
+        if (isZipFile(name)) {
           const nested = await unzipToTextMap(await file.arrayBuffer());
           for (const [path, text] of nested) {
             textMap.set(path, text);
           }
           continue;
         }
-
-        if (isJsonName(file.name)) {
-          const path = normalizePath(file.webkitRelativePath || file.name);
-          textMap.set(path, await readFileAsText(file));
+        if (isAllowedJsonUpload(name)) {
+          textMap.set(name.toLowerCase(), await readFileAsText(file));
         }
       }
 
@@ -786,7 +710,7 @@
         const base = pathBase(path);
         if (base === "following.json") {
           followingCandidates.push(path);
-        } else if (/^followers_\d+\.json$/.test(base) || base === "followers.json") {
+        } else if (/^followers_\d+\.json$/.test(base)) {
           followerCandidates.push(path);
         }
       }
@@ -985,16 +909,8 @@
       if (!uploadInput.files.length) {
         return;
       }
-      const files = uploadInput.files;
-      if (files[0].webkitRelativePath) {
-        const pairs = [...files].map((file) => [
-          normalizePath(file.webkitRelativePath || file.name),
-          file,
-        ]);
-        ingest(() => collectFromPathFiles(pairs));
-      } else {
-        ingest(() => collectFromFileList(files));
-      }
+      ingest(() => collectFromFiles(uploadInput.files));
+      uploadInput.value = "";
     });
 
     dropzone.addEventListener("dragover", (event) => {
@@ -1009,7 +925,7 @@
     dropzone.addEventListener("drop", (event) => {
       event.preventDefault();
       dropzone.classList.remove("dragover");
-      ingest(() => collectFromDataTransfer(event.dataTransfer));
+      ingest(() => collectFromFiles(event.dataTransfer.files));
     });
 
     filterInput.addEventListener("input", applyFilter);
