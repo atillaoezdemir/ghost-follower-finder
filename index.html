@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>fanın sanıp yalnız bıraktıkların</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f4f5;
+      --card: #fff;
+      --text: #18181b;
+      --muted: #71717a;
+      --border: #e4e4e7;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --drop: #eff6ff;
+      --drop-border: #93c5fd;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090b;
+        --card: #18181b;
+        --text: #fafafa;
+        --muted: #a1a1aa;
+        --border: #3f3f46;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+        --drop: #172554;
+        --drop-border: #3b82f6;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .lang-switch {
+      display: flex;
+      gap: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .lang-switch button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      font: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .lang-switch button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      line-height: 1.25;
+    }
+
+    .tagline {
+      color: var(--muted);
+      margin: 0 0 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .howto {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.15rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.92rem;
+    }
+
+    .howto h2 {
+      margin: 0 0 0.65rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    .howto ol {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .howto li {
+      margin-bottom: 0.4rem;
+    }
+
+    .howto li:last-child {
+      margin-bottom: 0;
+    }
+
+    .howto a {
+      color: var(--accent);
+    }
+
+    .howto code {
+      font-family: ui-monospace, monospace;
+      font-size: 0.88em;
+    }
+
+    .dropzone {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem 0.75rem;
+      background: var(--drop);
+      border: 1px dashed var(--drop-border);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .dropzone.dragover {
+      border-color: var(--accent);
+      background: var(--card);
+    }
+
+    .formats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .formats span {
+      font-size: 0.78rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: ui-monospace, monospace;
+    }
+
+    .file-input-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    button.pick {
+      appearance: none;
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      font: inherit;
+      font-size: 0.88rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      flex-shrink: 0;
+    }
+
+    button.pick:hover {
+      background: var(--accent-hover);
+    }
+
+    #upload-panel .status {
+      margin-top: 0.5rem;
+    }
+
+    button.linkish {
+      appearance: none;
+      border: none;
+      background: none;
+      padding: 0;
+      font: inherit;
+      font-size: 0.88rem;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .status {
+      font-size: 0.88rem;
+      color: var(--muted);
+      min-height: 1.25em;
+    }
+
+    .status.error { color: #dc2626; }
+
+    .status code {
+      font-family: ui-monospace, monospace;
+      font-size: 0.92em;
+    }
+
+    .hidden { display: none; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 0.75rem;
+    }
+
+    .toolbar input[type="search"] {
+      flex: 1 1 12rem;
+      min-width: 0;
+      padding: 0.5rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font: inherit;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .count {
+      font-size: 0.9rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    td a {
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    .empty {
+      padding: 1.25rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    #result-heading {
+      margin: 0 0 0.75rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <div class="lang-switch" role="group" aria-label="language">
+        <button type="button" data-lang="tr">TR</button>
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="de">DE</button>
+      </div>
+    </div>
+
+    <h1 id="title"></h1>
+    <p class="tagline" id="tagline"></p>
+
+    <section class="howto" id="howto">
+      <h2 id="howto-title"></h2>
+      <ol>
+        <li id="step-1"></li>
+        <li id="step-2"></li>
+        <li id="step-3"></li>
+      </ol>
+    </section>
+
+    <section id="upload-panel">
+      <div class="dropzone" id="dropzone">
+        <input class="file-input-hidden" type="file" id="upload-input" multiple webkitdirectory directory>
+        <div class="formats" aria-hidden="true">
+          <span>.zip</span>
+          <span>followers_1.json</span>
+          <span>following.json</span>
+        </div>
+        <button type="button" class="pick" id="btn-upload"></button>
+      </div>
+      <p class="status" id="status"></p>
+    </section>
+
+    <section id="results" class="hidden">
+      <div class="toolbar">
+        <input type="search" id="filter" autocomplete="off">
+        <span class="count" id="result-count"></span>
+        <button type="button" class="linkish" id="btn-reupload"></button>
+      </div>
+      <p id="result-heading"></p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th id="col-username"></th>
+              <th id="col-profile"></th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+        <p class="empty hidden" id="no-rows"></p>
+      </div>
+    </section>
+
+    <footer id="footer"></footer>
+  </main>
+
+  <script>
+    const DYI_URL = "https://accountscenter.instagram.com/info_and_permissions/dyi/";
+
+    const I18N = {
+      tr: {
+        pageTitle: "seni kendi fanı yapanları bul",
+        title: "seni kendi fanı yapanları bul",
+        tagline:
+          "geri takip etmedikleri için onların fanı olduğun hesapları bul — log in yok, veri sadece tarayıcında",
+        howtoTitle: "nasıl kullanılır",
+        step1:
+          'Instagram → <a href="' +
+          DYI_URL +
+          '" target="_blank" rel="noopener noreferrer">Accounts Center</a> → <strong>Bilgilerini dışa aktar</strong> (Export your information) → format: <strong>JSON</strong> → followers ve following seç',
+        step2:
+          "ister uğraşmadan direkt <code>.zip</code> yükle, ister yalnızca <code>followers_1.json</code> ile <code>following.json</code> dosyalarını yükle",
+        step3:
+          "seni geri takip etmeyen ama senin takip ettiklerin listelenir — kolpalar birer birer ortaya çıkacak",
+        upload: "yükle",
+        uploadAria: "instagram export yükle",
+        searchPlaceholder: "kullanıcı ara",
+        reupload: "tekrar yükle",
+        colUsername: "kullanıcı adı",
+        colProfile: "profil",
+        footer: "tek html dosyası — internetsiz de çalışır",
+        reading: "okunuyor…",
+        errEmpty:
+          "bir şey bulunamadı — <code>.zip</code> veya <code>followers_1.json</code> + <code>following.json</code> dene",
+        errGeneric: "bir şeyler ters gitti",
+        errZip: "zip dosyası okunamadı",
+        errDecompress: "zip içeriği açılamadı",
+        errRead: 'dosya okunamadı: "{name}"',
+        errParse: 'geçersiz json: "{name}"',
+        errNotFound:
+          "<code>following.json</code> ve followers dosyası bulunamadı — export tam mı kontrol et",
+        errFollowingFormat: "<code>following.json</code> geçerli bir export gibi görünmüyor",
+        resultEmpty: "herkes seni geri takip ediyor — kimsenin fanı değilsin, temiz kaçmışsın",
+        resultHeading: "onların fanı olduğun hesaplar — geri takip yok",
+        noMatch: "eşleşme yok",
+        countOf: "{n} / {total}",
+      },
+      en: {
+        pageTitle: "find who made you their fan",
+        title: "find who made you their fan",
+        tagline:
+          "find accounts you follow who never followed back — you're basically their fan, no login required",
+        howtoTitle: "how to use",
+        step1:
+          'Instagram → <a href="' +
+          DYI_URL +
+          '" target="_blank" rel="noopener noreferrer">Accounts Center</a> → <strong>Export your information</strong> → choose <strong>JSON</strong> format → select followers and following',
+        step2:
+          "either upload the <code>.zip</code> as-is, or upload only <code>followers_1.json</code> and <code>following.json</code>",
+        step3:
+          "lists accounts you follow who do not follow you back — the fakes will appear one by one",
+        upload: "upload",
+        uploadAria: "upload instagram export",
+        searchPlaceholder: "search usernames",
+        reupload: "upload again",
+        colUsername: "username",
+        colProfile: "profile",
+        footer: "single html file — works offline",
+        reading: "reading…",
+        errEmpty:
+          "nothing found — try the <code>.zip</code> or <code>followers_1.json</code> + <code>following.json</code>",
+        errGeneric: "something went wrong",
+        errZip: "could not read the zip file",
+        errDecompress: "could not decompress zip entry",
+        errRead: 'could not read "{name}"',
+        errParse: 'invalid json: "{name}"',
+        errNotFound:
+          "could not find <code>following.json</code> and followers files — is the export complete?",
+        errFollowingFormat: "<code>following.json</code> does not look like a valid export",
+        resultEmpty: "everyone follows you back — you're nobody's fan, clean list",
+        resultHeading: "accounts that made you their fan — no follow back",
+        noMatch: "no matches",
+        countOf: "{n} of {total}",
+      },
+      de: {
+        pageTitle: "finde wer dich zu ihrem fan gemacht hat",
+        title: "finde wer dich zu ihrem fan gemacht hat",
+        tagline:
+          "finde konten denen du folgst die dir nicht zurückfolgen — du bist praktisch ihr fan, ohne login",
+        howtoTitle: "anleitung",
+        step1:
+          'Instagram → <a href="' +
+          DYI_URL +
+          '" target="_blank" rel="noopener noreferrer">Accounts Center</a> → <strong>Informationen exportieren</strong> (Export your information) → Format <strong>JSON</strong> → followers und following auswählen',
+        step2:
+          "entweder die <code>.zip</code> direkt hochladen oder nur <code>followers_1.json</code> und <code>following.json</code>",
+        step3:
+          "listet konten denen du folgst die dir nicht zurückfolgen — die fakes kommen nacheinander ans licht",
+        upload: "hochladen",
+        uploadAria: "instagram export hochladen",
+        searchPlaceholder: "nutzer suchen",
+        reupload: "erneut hochladen",
+        colUsername: "nutzername",
+        colProfile: "profil",
+        footer: "eine html-datei — funktioniert offline",
+        reading: "wird gelesen…",
+        errEmpty:
+          "nichts gefunden — <code>.zip</code> oder <code>followers_1.json</code> + <code>following.json</code> versuchen",
+        errGeneric: "etwas ist schiefgelaufen",
+        errZip: "zip-datei konnte nicht gelesen werden",
+        errDecompress: "zip-eintrag konnte nicht entpackt werden",
+        errRead: 'datei konnte nicht gelesen werden: "{name}"',
+        errParse: 'ungültiges json: "{name}"',
+        errNotFound:
+          "<code>following.json</code> und followers-dateien nicht gefunden — export vollständig?",
+        errFollowingFormat: "<code>following.json</code> sieht nicht wie ein gültiger export aus",
+        resultEmpty: "alle folgen dir zurück — du bist niemandes fan, saubere liste",
+        resultHeading: "konten die dich zu ihrem fan gemacht haben — kein zurückfolgen",
+        noMatch: "keine treffer",
+        countOf: "{n} von {total}",
+      },
+    };
+
+    const dropzone = document.getElementById("dropzone");
+    const uploadInput = document.getElementById("upload-input");
+    const uploadPanel = document.getElementById("upload-panel");
+    const statusEl = document.getElementById("status");
+    const resultsSection = document.getElementById("results");
+    const resultHeading = document.getElementById("result-heading");
+    const resultsBody = document.getElementById("results-body");
+    const resultCount = document.getElementById("result-count");
+    const filterInput = document.getElementById("filter");
+    const noRows = document.getElementById("no-rows");
+    const resultsTable = document.querySelector("#results table");
+
+    let lang = "tr";
+    let allRows = [];
+
+    function t(key, vars) {
+      let text = I18N[lang][key] || I18N.en[key] || key;
+      if (vars) {
+        for (const [name, value] of Object.entries(vars)) {
+          text = text.replace("{" + name + "}", value);
+        }
+      }
+      return text;
+    }
+
+    function detectLang() {
+      const saved = localStorage.getItem("ig-fan-lang");
+      if (saved && I18N[saved]) {
+        return saved;
+      }
+      const browser = (navigator.language || "en").slice(0, 2).toLowerCase();
+      if (I18N[browser]) {
+        return browser;
+      }
+      return "en";
+    }
+
+    function applyLang() {
+      document.documentElement.lang = lang;
+      document.title = t("pageTitle");
+      document.getElementById("title").textContent = t("title");
+      document.getElementById("tagline").textContent = t("tagline");
+      document.getElementById("howto-title").textContent = t("howtoTitle");
+      document.getElementById("step-1").innerHTML = t("step1");
+      document.getElementById("step-2").innerHTML = t("step2");
+      document.getElementById("step-3").textContent = t("step3");
+      document.getElementById("btn-upload").textContent = t("upload");
+      dropzone.setAttribute("aria-label", t("uploadAria"));
+      filterInput.placeholder = t("searchPlaceholder");
+      document.getElementById("btn-reupload").textContent = t("reupload");
+      document.getElementById("col-username").textContent = t("colUsername");
+      document.getElementById("col-profile").textContent = t("colProfile");
+      document.getElementById("footer").textContent = t("footer");
+      noRows.textContent = t("noMatch");
+
+      document.querySelectorAll(".lang-switch button").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.lang === lang);
+      });
+
+      if (allRows.length) {
+        if (resultsTable.classList.contains("hidden")) {
+          resultHeading.textContent = t("resultEmpty");
+        } else {
+          resultHeading.textContent = t("resultHeading");
+        }
+        applyFilter();
+      }
+    }
+
+    function setLang(code) {
+      lang = code;
+      localStorage.setItem("ig-fan-lang", code);
+      applyLang();
+    }
+
+    function profileUrl(username) {
+      return "https://www.instagram.com/" + encodeURIComponent(username) + "/";
+    }
+
+    function normalizePath(path) {
+      return path.replace(/\\/g, "/").replace(/^\/+/, "");
+    }
+
+    function pathBase(path) {
+      const parts = normalizePath(path).split("/");
+      return parts[parts.length - 1].toLowerCase();
+    }
+
+    function pathScore(path) {
+      const p = normalizePath(path).toLowerCase();
+      let score = 0;
+      if (p.includes("followers_and_following/")) score += 4;
+      if (p.includes("connections/")) score += 2;
+      if (p.startsWith("followers_and_following/")) score += 1;
+      return score;
+    }
+
+    function isZipName(name) {
+      return name.toLowerCase().endsWith(".zip");
+    }
+
+    function isJsonName(name) {
+      return name.toLowerCase().endsWith(".json");
+    }
+
+    async function inflateDeflate(data) {
+      for (const format of ["deflate", "deflate-raw"]) {
+        try {
+          const out = new Blob([data]).stream().pipeThrough(new DecompressionStream(format));
+          const ab = await new Response(out).arrayBuffer();
+          return new Uint8Array(ab);
+        } catch {
+          /* try next format */
+        }
+      }
+      throw new Error(t("errDecompress"));
+    }
+
+    async function unzipToTextMap(arrayBuffer) {
+      const view = new DataView(arrayBuffer);
+      const bytes = new Uint8Array(arrayBuffer);
+      const textMap = new Map();
+      const decoder = new TextDecoder();
+
+      let eocd = -1;
+      for (let i = bytes.length - 22; i >= 0; i--) {
+        if (view.getUint32(i, true) === 0x06054b50) {
+          eocd = i;
+          break;
+        }
+      }
+      if (eocd < 0) {
+        throw new Error(t("errZip"));
+      }
+
+      const totalEntries = view.getUint16(eocd + 10, true);
+      let offset = view.getUint32(eocd + 16, true);
+
+      for (let n = 0; n < totalEntries; n++) {
+        if (view.getUint32(offset, true) !== 0x02014b50) {
+          break;
+        }
+
+        const compression = view.getUint16(offset + 10, true);
+        const compressedSize = view.getUint32(offset + 20, true);
+        const nameLen = view.getUint16(offset + 28, true);
+        const extraLen = view.getUint16(offset + 30, true);
+        const commentLen = view.getUint16(offset + 32, true);
+        const localHeaderOffset = view.getUint32(offset + 42, true);
+        const name = decoder.decode(bytes.subarray(offset + 46, offset + 46 + nameLen));
+        offset += 46 + nameLen + extraLen + commentLen;
+
+        if (name.endsWith("/") || !isJsonName(name)) {
+          continue;
+        }
+
+        const localOffset = localHeaderOffset;
+        const localNameLen = view.getUint16(localOffset + 26, true);
+        const localExtraLen = view.getUint16(localOffset + 28, true);
+        const dataStart = localOffset + 30 + localNameLen + localExtraLen;
+        const compressed = bytes.subarray(dataStart, dataStart + compressedSize);
+
+        let raw;
+        if (compression === 0) {
+          raw = compressed;
+        } else if (compression === 8) {
+          raw = await inflateDeflate(compressed);
+        } else {
+          continue;
+        }
+
+        textMap.set(normalizePath(name), decoder.decode(raw));
+      }
+
+      return textMap;
+    }
+
+    function readAllDirectoryEntries(reader) {
+      return new Promise((resolve, reject) => {
+        const entries = [];
+
+        function readBatch() {
+          reader.readEntries(
+            (batch) => {
+              if (!batch.length) {
+                resolve(entries);
+                return;
+              }
+              entries.push(...batch);
+              readBatch();
+            },
+            reject
+          );
+        }
+
+        readBatch();
+      });
+    }
+
+    async function walkEntry(entry, prefix) {
+      if (entry.isFile) {
+        const file = await new Promise((resolve, reject) => {
+          entry.file(resolve, reject);
+        });
+        const path = normalizePath(prefix + file.name);
+        return [[path, file]];
+      }
+
+      if (!entry.isDirectory) {
+        return [];
+      }
+
+      const reader = entry.createReader();
+      const children = await readAllDirectoryEntries(reader);
+      const nested = await Promise.all(
+        children.map((child) => walkEntry(child, prefix + entry.name + "/"))
+      );
+      return nested.flat();
+    }
+
+    async function collectFromDataTransfer(dataTransfer) {
+      const items = [...dataTransfer.items].filter((item) => item.kind === "file");
+
+      if (items.length && typeof items[0].webkitGetAsEntry === "function") {
+        const entries = items.map((item) => item.webkitGetAsEntry()).filter(Boolean);
+        if (entries.some((entry) => entry.isDirectory)) {
+          const pairs = (await Promise.all(entries.map((entry) => walkEntry(entry, "")))).flat();
+          if (pairs.length) {
+            return collectFromPathFiles(pairs);
+          }
+        }
+      }
+
+      const files = [...dataTransfer.files];
+      if (files.length && files[0].webkitRelativePath) {
+        const pairs = files.map((file) => [
+          normalizePath(file.webkitRelativePath || file.name),
+          file,
+        ]);
+        return collectFromPathFiles(pairs);
+      }
+
+      return collectFromFileList(files);
+    }
+
+    async function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error(t("errRead", { name: file.name })));
+        reader.readAsText(file);
+      });
+    }
+
+    async function collectFromPathFiles(pathFilePairs) {
+      const textMap = new Map();
+
+      for (const [path, file] of pathFilePairs) {
+        if (isZipName(file.name)) {
+          const nested = await unzipToTextMap(await file.arrayBuffer());
+          for (const [nestedPath, text] of nested) {
+            textMap.set(nestedPath, text);
+          }
+          continue;
+        }
+        if (isJsonName(path) || isJsonName(file.name)) {
+          textMap.set(path, await readFileAsText(file));
+        }
+      }
+
+      return textMap;
+    }
+
+    async function collectFromFileList(fileList) {
+      const textMap = new Map();
+
+      for (const file of fileList) {
+        if (isZipName(file.name)) {
+          const nested = await unzipToTextMap(await file.arrayBuffer());
+          for (const [path, text] of nested) {
+            textMap.set(path, text);
+          }
+          continue;
+        }
+
+        if (isJsonName(file.name)) {
+          const path = normalizePath(file.webkitRelativePath || file.name);
+          textMap.set(path, await readFileAsText(file));
+        }
+      }
+
+      return textMap;
+    }
+
+    function pickInstagramPaths(textMap) {
+      const paths = [...textMap.keys()];
+      const followingCandidates = [];
+      const followerCandidates = [];
+
+      for (const path of paths) {
+        const base = pathBase(path);
+        if (base === "following.json") {
+          followingCandidates.push(path);
+        } else if (/^followers_\d+\.json$/.test(base) || base === "followers.json") {
+          followerCandidates.push(path);
+        }
+      }
+
+      followingCandidates.sort((a, b) => pathScore(b) - pathScore(a));
+      followerCandidates.sort((a, b) => {
+        const scoreDiff = pathScore(b) - pathScore(a);
+        if (scoreDiff !== 0) {
+          return scoreDiff;
+        }
+        return a.localeCompare(b, undefined, { numeric: true });
+      });
+
+      return {
+        followingPath: followingCandidates[0] || null,
+        followerPaths: followerCandidates,
+      };
+    }
+
+    function parseJson(text, label) {
+      try {
+        return JSON.parse(text);
+      } catch {
+        throw new Error(t("errParse", { name: label }));
+      }
+    }
+
+    function mergeFollowers(datasets) {
+      const followers = new Set();
+      for (const data of datasets) {
+        if (!Array.isArray(data)) {
+          continue;
+        }
+        for (const item of data) {
+          for (const entry of item.string_list_data || []) {
+            if (entry.value) {
+              followers.add(entry.value.toLowerCase());
+            }
+          }
+        }
+      }
+      return followers;
+    }
+
+    function loadFollowing(data) {
+      const following = [];
+      for (const item of data.relationships_following || []) {
+        if (!item.title) {
+          continue;
+        }
+        const href = item.string_list_data?.[0]?.href || profileUrl(item.title);
+        following.push({ username: item.title, href });
+      }
+      return following;
+    }
+
+    function compare(followersSet, followingList) {
+      return followingList
+        .filter(({ username }) => !followersSet.has(username.toLowerCase()))
+        .sort((a, b) => a.username.localeCompare(b.username, undefined, { sensitivity: "base" }));
+    }
+
+    function setStatus(message, isError) {
+      statusEl.textContent = message;
+      statusEl.classList.toggle("error", Boolean(isError));
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function escapeAttr(text) {
+      return escapeHtml(text).replace(/'/g, "&#39;");
+    }
+
+    function applyFilter() {
+      const query = filterInput.value.trim().toLowerCase();
+      const filtered = query
+        ? allRows.filter((row) => row.username.toLowerCase().includes(query))
+        : allRows;
+
+      resultsBody.innerHTML = filtered
+        .map(
+          (row) =>
+            "<tr><td>" +
+            escapeHtml(row.username) +
+            '</td><td><a href="' +
+            escapeAttr(row.href) +
+            '" target="_blank" rel="noopener noreferrer">' +
+            escapeHtml(profileUrl(row.username)) +
+            "</a></td></tr>"
+        )
+        .join("");
+
+      if (allRows.length === 0) {
+        resultCount.textContent = "";
+        return;
+      }
+
+      resultCount.textContent = t("countOf", {
+        n: String(filtered.length),
+        total: String(allRows.length),
+      });
+      if (!resultsTable.classList.contains("hidden")) {
+        noRows.classList.toggle("hidden", filtered.length > 0);
+      }
+    }
+
+    function showResults(rows) {
+      allRows = rows.map((row) => ({
+        username: row.username,
+        href: row.href.startsWith("http") ? row.href : profileUrl(row.username),
+      }));
+
+      filterInput.value = "";
+      resultsSection.classList.remove("hidden");
+
+      if (allRows.length === 0) {
+        resultHeading.textContent = t("resultEmpty");
+        resultsBody.innerHTML = "";
+        resultsTable.classList.add("hidden");
+        noRows.classList.add("hidden");
+        resultCount.textContent = "";
+      } else {
+        resultHeading.textContent = t("resultHeading");
+        resultsTable.classList.remove("hidden");
+        noRows.textContent = t("noMatch");
+        applyFilter();
+      }
+
+      setStatus("", false);
+      uploadPanel.classList.add("hidden");
+    }
+
+    async function runComparison(textMap) {
+      const { followingPath, followerPaths } = pickInstagramPaths(textMap);
+
+      if (!followingPath || !followerPaths.length) {
+        throw new Error(t("errNotFound"));
+      }
+
+      const followingData = parseJson(textMap.get(followingPath), pathBase(followingPath));
+      if (!followingData.relationships_following) {
+        throw new Error(t("errFollowingFormat"));
+      }
+
+      const followerDatasets = followerPaths.map((path) =>
+        parseJson(textMap.get(path), pathBase(path))
+      );
+
+      const rows = compare(mergeFollowers(followerDatasets), loadFollowing(followingData));
+      showResults(rows);
+    }
+
+    async function ingest(source) {
+      setStatus(t("reading"), false);
+      resultsSection.classList.add("hidden");
+
+      try {
+        const textMap = await source();
+        if (!textMap.size) {
+          statusEl.innerHTML = t("errEmpty");
+          statusEl.classList.add("error");
+          return;
+        }
+        await runComparison(textMap);
+      } catch (err) {
+        if (err.message && err.message.includes("<code>")) {
+          statusEl.innerHTML = err.message;
+          statusEl.classList.add("error");
+        } else {
+          setStatus(err.message || t("errGeneric"), true);
+        }
+      }
+    }
+
+    function resetUpload() {
+      allRows = [];
+      uploadInput.value = "";
+      filterInput.value = "";
+      resultsBody.innerHTML = "";
+      resultsSection.classList.add("hidden");
+      uploadPanel.classList.remove("hidden");
+      setStatus("", false);
+    }
+
+    document.getElementById("btn-upload").addEventListener("click", () => {
+      uploadInput.click();
+    });
+
+    uploadInput.addEventListener("change", () => {
+      if (!uploadInput.files.length) {
+        return;
+      }
+      const files = uploadInput.files;
+      if (files[0].webkitRelativePath) {
+        const pairs = [...files].map((file) => [
+          normalizePath(file.webkitRelativePath || file.name),
+          file,
+        ]);
+        ingest(() => collectFromPathFiles(pairs));
+      } else {
+        ingest(() => collectFromFileList(files));
+      }
+    });
+
+    dropzone.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      dropzone.classList.add("dragover");
+    });
+
+    dropzone.addEventListener("dragleave", () => {
+      dropzone.classList.remove("dragover");
+    });
+
+    dropzone.addEventListener("drop", (event) => {
+      event.preventDefault();
+      dropzone.classList.remove("dragover");
+      ingest(() => collectFromDataTransfer(event.dataTransfer));
+    });
+
+    filterInput.addEventListener("input", applyFilter);
+    document.getElementById("btn-reupload").addEventListener("click", resetUpload);
+
+    document.querySelectorAll(".lang-switch button").forEach((btn) => {
+      btn.addEventListener("click", () => setLang(btn.dataset.lang));
+    });
+
+    lang = detectLang();
+    applyLang();
+  </script>
+</body>
+</html>
