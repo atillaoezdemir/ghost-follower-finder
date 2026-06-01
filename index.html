@@ -16,6 +16,9 @@
       --accent-hover: #1d4ed8;
       --drop: #eff6ff;
       --drop-border: #93c5fd;
+      --hint: rgba(113, 113, 122, 0.35);
+      --hint-hover: rgba(113, 113, 122, 0.85);
+      --last-clicked-bg: #f4f4f5;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -29,6 +32,9 @@
         --accent-hover: #60a5fa;
         --drop: #172554;
         --drop-border: #3b82f6;
+        --hint: rgba(161, 161, 170, 0.35);
+        --hint-hover: rgba(161, 161, 170, 0.85);
+        --last-clicked-bg: #27272a;
       }
     }
 
@@ -203,16 +209,27 @@
       margin-top: 0.5rem;
     }
 
-    button.linkish {
+    #btn-reupload {
       appearance: none;
-      border: none;
-      background: none;
-      padding: 0;
-      font: inherit;
-      font-size: 0.88rem;
-      color: var(--accent);
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      border-radius: 8px;
+      width: 2.3rem;
+      height: 2.3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      text-decoration: underline;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    #btn-reupload:hover {
+      background: var(--bg);
+      color: var(--text);
+      border-color: var(--muted);
     }
 
     .status {
@@ -283,6 +300,14 @@
 
     tr:last-child td { border-bottom: none; }
 
+    tr {
+      transition: background-color 0.2s ease;
+    }
+
+    tr.last-clicked {
+      background-color: var(--last-clicked-bg);
+    }
+
     td a {
       color: var(--accent);
       word-break: break-all;
@@ -298,6 +323,10 @@
       margin: 0 0 0.75rem;
       font-size: 0.95rem;
       color: var(--muted);
+    }
+
+    #result-heading:empty {
+      margin: 0;
     }
 
     footer {
@@ -319,11 +348,14 @@
       background: transparent;
       color: var(--muted);
       border-radius: 6px;
-      padding: 0.18rem 0.55rem;
-      font: inherit;
-      font-size: 0.75rem;
+      width: 1.65rem;
+      height: 1.65rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
+      padding: 0;
     }
 
     .dismiss-btn:hover {
@@ -350,18 +382,17 @@
       border-radius: 50%;
       font-size: 0.7rem;
       font-weight: 700;
-      color: var(--muted);
-      opacity: 0.35;
+      color: var(--hint);
       cursor: default;
       position: relative;
       user-select: none;
-      transition: opacity 0.15s;
+      transition: color 0.15s;
       vertical-align: middle;
     }
 
     .hint-icon:hover,
     .hint-icon:focus {
-      opacity: 0.85;
+      color: var(--hint-hover);
       outline: none;
     }
 
@@ -437,7 +468,12 @@
       <div class="toolbar">
         <input type="search" id="filter" autocomplete="off">
         <span class="count" id="result-count"></span>
-        <button type="button" class="linkish" id="btn-reupload"></button>
+        <button type="button" id="btn-reupload">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" stroke="currentColor" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658a.25.25 0 0 1-.41-.192z"/>
+          </svg>
+        </button>
       </div>
       <p id="result-heading"></p>
       <div class="table-wrap">
@@ -498,12 +534,12 @@
         errFollowersFormat:
           "<code>followers_1.json</code> okunamadı — tüm <code>followers_*.json</code> dosyalarını veya <code>.zip</code> yükle",
         resultEmpty: "herkes seni geri takip ediyor — kimsenin fanı değilsin, temiz kaçmışsın",
-        resultHeading: "onların fanı olduğun hesaplar — geri takip yok",
+        resultHeading: "",
         noMatch: "eşleşme yok",
         countOf: "{n} / {total}",
         dismissBtn: "gizle",
         dismissBtnTitle: "bu hesabı tarayıcıya kaydet ve bir daha gösterme",
-        hintText: "Bir profile tıklayıp bu sekmeye geri döndüğünde o satırda buton belirir — basınca hesap tarayıcında kalıcı olarak saklanır ve yeni listelemelerde bir daha gösterilmez.",
+        hintText: "Çarpı (×) butonuna basarak hesabı tarayıcınıza kaydedebilir ve yeni listelemelerde gösterilmesini kalıcı olarak engelleyebilirsiniz.",
       },
       en: {
         pageTitle: "find who made you their fan",
@@ -541,12 +577,12 @@
         errFollowersFormat:
           "could not read <code>followers_1.json</code> — upload all <code>followers_*.json</code> files or the <code>.zip</code>",
         resultEmpty: "everyone follows you back — you're nobody's fan, clean list",
-        resultHeading: "accounts that made you their fan — no follow back",
+        resultHeading: "",
         noMatch: "no matches",
         countOf: "{n} of {total}",
         dismissBtn: "hide",
         dismissBtnTitle: "save this account in your browser and never show it again",
-        hintText: "After opening a profile and coming back to this tab, a button appears on that row — press it to permanently save the account in your browser and exclude it from future lists.",
+        hintText: "Press the cross (×) button to permanently save the account in your browser and exclude it from future lists.",
       },
       de: {
         pageTitle: "finde, wer dich zu ihrem fan gemacht hat",
@@ -584,12 +620,12 @@
         errFollowersFormat:
           "<code>followers_1.json</code> nicht lesbar — alle <code>followers_*.json</code> oder die <code>.zip</code> hochladen",
         resultEmpty: "alle folgen dir zurück — du bist niemandes fan, saubere liste",
-        resultHeading: "konten, die dich zu ihrem fan gemacht haben — kein zurückfolgen",
+        resultHeading: "",
         noMatch: "keine treffer",
         countOf: "{n} von {total}",
         dismissBtn: "ausblenden",
         dismissBtnTitle: "dieses konto im browser speichern und nie wieder anzeigen",
-        hintText: "Wenn du ein Profil öffnest und zu diesem Tab zurückkommst, erscheint in der Zeile ein Button — drücke ihn, um das Konto dauerhaft zu speichern und aus künftigen Listen zu entfernen.",
+        hintText: "Klicke auf das Kreuz (×), um das Konto dauerhaft in deinem Browser zu speichern und aus zukünftigen Listen auszuschließen.",
       },
     };
 
@@ -609,12 +645,16 @@
     let allRows = [];
     const accumulatedTextMap = new Map();
     const DISMISSED_KEY = "ig-dismissed";
+    const CLICKED_KEY = "ig-clicked";
     let dismissedSet = new Set();
+    let clickedSet = new Set();
     try { dismissedSet = new Set(JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]")); } catch (_) {}
-    let lastClickedUsername = null;
+    try { clickedSet = new Set(JSON.parse(localStorage.getItem(CLICKED_KEY) || "[]")); } catch (_) {}
 
     function t(key, vars) {
-      let text = I18N[lang][key] || I18N.en[key] || key;
+      let text = I18N[lang]?.[key] !== undefined
+        ? I18N[lang][key]
+        : (I18N.en?.[key] !== undefined ? I18N.en[key] : key);
       if (vars) {
         for (const [name, value] of Object.entries(vars)) {
           text = text.replace("{" + name + "}", value);
@@ -647,7 +687,9 @@
       document.getElementById("btn-upload").textContent = t("upload");
       dropzone.setAttribute("aria-label", t("uploadAria"));
       filterInput.placeholder = t("searchPlaceholder");
-      document.getElementById("btn-reupload").textContent = t("reupload");
+      const btnReupload = document.getElementById("btn-reupload");
+      btnReupload.setAttribute("title", t("reupload"));
+      btnReupload.setAttribute("aria-label", t("reupload"));
       document.getElementById("col-username").textContent = t("colUsername");
       document.getElementById("col-profile").textContent = t("colProfile");
       document.getElementById("footer").textContent = t("footer");
@@ -920,7 +962,7 @@
 
     function compare(followersSet, followingList) {
       return followingList
-        .filter(({ username }) => !followersSet.has(username.toLowerCase()) && !dismissedSet.has(username.toLowerCase()))
+        .filter(({ username }) => !followersSet.has(username.toLowerCase()) && !dismissedSet.has(username.toLowerCase()) && !username.toLowerCase().startsWith("__deleted"))
         .sort((a, b) => a.username.localeCompare(b.username, undefined, { sensitivity: "base" }));
     }
 
@@ -947,19 +989,22 @@
         ? allRows.filter((row) => row.username.toLowerCase().includes(query))
         : allRows;
 
-      const pendingLower = lastClickedUsername ? lastClickedUsername.toLowerCase() : null;
       resultsBody.innerHTML = filtered
         .map((row) => {
           const u = escapeHtml(row.username);
           const uAttr = escapeAttr(row.username);
           const href = escapeAttr(row.href);
-          const isPending = pendingLower && pendingLower === row.username.toLowerCase();
-          const btnHidden = isPending ? "" : " hidden";
+          const isClicked = clickedSet.has(row.username.toLowerCase());
+          const trClass = isClicked ? ' class="last-clicked"' : '';
           return (
-            `<tr data-username="${uAttr}">` +
+            `<tr data-username="${uAttr}"${trClass}>` +
             `<td>${u}</td>` +
             `<td><a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(profileUrl(row.username))}</a></td>` +
-            `<td class="dismiss-cell"><button class="dismiss-btn${btnHidden}" data-username="${uAttr}" title="${escapeAttr(t("dismissBtnTitle"))}">${escapeHtml(t("dismissBtn"))}</button></td>` +
+            `<td class="dismiss-cell">` +
+              `<button class="dismiss-btn" data-username="${uAttr}" title="${escapeAttr(t("dismissBtnTitle"))}">` +
+                `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2 2l8 8m0-8L2 10"/></svg>` +
+              `</button>` +
+            `</td>` +
             `</tr>`
           );
         })
@@ -979,25 +1024,13 @@
       }
     }
 
-    function showDismissButton(username) {
-      const lower = username.toLowerCase();
-      for (const tr of resultsBody.querySelectorAll("tr[data-username]")) {
-        if (tr.dataset.username.toLowerCase() === lower) {
-          const btn = tr.querySelector(".dismiss-btn");
-          if (btn) btn.classList.remove("hidden");
-          break;
-        }
-      }
-    }
-
     function dismiss(username) {
       dismissedSet.add(username.toLowerCase());
+      clickedSet.delete(username.toLowerCase());
       try {
         localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissedSet]));
+        localStorage.setItem(CLICKED_KEY, JSON.stringify([...clickedSet]));
       } catch (_) {}
-      if (lastClickedUsername && lastClickedUsername.toLowerCase() === username.toLowerCase()) {
-        lastClickedUsername = null;
-      }
       allRows = allRows.filter((r) => r.username.toLowerCase() !== username.toLowerCase());
       applyFilter();
     }
@@ -1145,18 +1178,19 @@
       const link = e.target.closest("a");
       if (link) {
         const tr = link.closest("tr[data-username]");
-        if (tr) lastClickedUsername = tr.dataset.username;
+        if (tr) {
+          const username = tr.dataset.username;
+          clickedSet.add(username.toLowerCase());
+          try {
+            localStorage.setItem(CLICKED_KEY, JSON.stringify([...clickedSet]));
+          } catch (_) {}
+          tr.classList.add("last-clicked");
+        }
       }
     });
 
     document.querySelectorAll(".lang-switch button").forEach((btn) => {
       btn.addEventListener("click", () => setLang(btn.dataset.lang));
-    });
-
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && lastClickedUsername) {
-        showDismissButton(lastClickedUsername);
-      }
     });
 
     lang = detectLang();
