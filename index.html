@@ -714,6 +714,7 @@
                     hintText:
                         "Çarpı (×) butonuna basarak hesabı tarayıcınıza kaydedebilir ve yeni listelemelerde gösterilmesini kalıcı olarak engelleyebilirsiniz.",
                     viewProfile: "Profili Gör",
+                    loadedFiles: "Hafızadaki dosyalar: {list}",
                 },
                 en: {
                     pageTitle: "find who made you their fan",
@@ -760,6 +761,7 @@
                     hintText:
                         "Press the cross (×) button to permanently save the account in your browser and exclude it from future lists.",
                     viewProfile: "View Profile",
+                    loadedFiles: "Files in memory: {list}",
                 },
                 de: {
                     pageTitle: "finde, wer dich zu ihrem fan gemacht hat",
@@ -806,6 +808,7 @@
                     hintText:
                         "Klicke auf das Kreuz (×), um das Konto dauerhaft in deinem Browser zu speichern und aus zukünftigen Listen auszuschließen.",
                     viewProfile: "Profil",
+                    loadedFiles: "Dateien im Speicher: {list}",
                 },
             };
 
@@ -824,7 +827,7 @@
             let lang = "en";
             let allRows = [];
             const accumulatedTextMap = new Map();
-            let dismissedSet = new Set();
+            let dismissedSet = new Set(JSON.parse(localStorage.getItem("dismissedUsers") || "[]"));
             let clickedSet = new Set();
 
             function t(key, vars) {
@@ -937,10 +940,6 @@
                     (b.startsWith("following") && b.endsWith(".json")) ||
                     (b.startsWith("followers") && b.endsWith(".json"))
                 );
-            }
-
-            function isAllowedJsonUpload(name) {
-                return isAllowedJsonBase(pathBase(name));
             }
 
             function isAllowedZipJsonPath(path) {
@@ -1202,7 +1201,7 @@
             }
 
             function escapeHtml(text) {
-                return text
+                return String(text)
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
@@ -1262,6 +1261,7 @@
 
             function dismiss(username) {
                 dismissedSet.add(username.toLowerCase());
+                localStorage.setItem("dismissedUsers", JSON.stringify([...dismissedSet]));
                 clickedSet.delete(username.toLowerCase());
                 allRows = allRows.filter(
                     (r) => r.username.toLowerCase() !== username.toLowerCase(),
@@ -1356,20 +1356,20 @@
                     await runComparison(accumulatedTextMap);
                 } catch (err) {
                     const loadedList =
-                        [...accumulatedTextMap.keys()].join(", ") || "yok";
+                        [...accumulatedTextMap.keys()].join(", ") || t("errNotFoundNone");
                     let errMsg = err.message || t("errGeneric");
                     if (errMsg.includes("<code>")) {
                         statusEl.innerHTML =
                             errMsg +
-                            "<br><small style='opacity:0.8;font-size:0.8em;'>Hafızadaki dosyalar: " +
-                            loadedList +
+                            "<br><small style='opacity:0.8;font-size:0.8em;'>" +
+                            t("loadedFiles", { list: loadedList }) +
                             "</small>";
                         statusEl.classList.add("error");
                     } else {
                         setStatus(
                             errMsg +
-                                " (Hafızadaki dosyalar: " +
-                                loadedList +
+                                " (" +
+                                t("loadedFiles", { list: loadedList }) +
                                 ")",
                             true,
                         );
