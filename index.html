@@ -843,6 +843,12 @@
             }
 
             function detectLang() {
+                const supported = Object.keys(I18N); // ["tr", "en", "de"]
+                const prefs = navigator.languages || [navigator.language || "en"];
+                for (const pref of prefs) {
+                    const code = pref.split("-")[0].toLowerCase();
+                    if (supported.includes(code)) return code;
+                }
                 return "en";
             }
 
