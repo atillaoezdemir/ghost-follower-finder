@@ -542,6 +542,25 @@
             .hint-icon:focus .tooltip {
                 display: block;
             }
+
+            @media (max-width: 480px) {
+                main {
+                    padding: 1.5rem 1rem 2.5rem;
+                }
+                .dropzone {
+                    padding: 1rem;
+                }
+                .howto {
+                    padding: 1rem;
+                }
+                th, td {
+                    padding: 0.65rem 0.75rem;
+                }
+                td a {
+                    padding: 0.65rem 0.75rem;
+                    margin: -0.65rem -0.75rem;
+                }
+            }
         </style>
     </head>
     <body>
@@ -694,6 +713,7 @@
                         "bu hesabı tarayıcıya kaydet ve bir daha gösterme",
                     hintText:
                         "Çarpı (×) butonuna basarak hesabı tarayıcınıza kaydedebilir ve yeni listelemelerde gösterilmesini kalıcı olarak engelleyebilirsiniz.",
+                    viewProfile: "Profili Gör",
                 },
                 en: {
                     pageTitle: "find who made you their fan",
@@ -739,6 +759,7 @@
                         "save this account in your browser and never show it again",
                     hintText:
                         "Press the cross (×) button to permanently save the account in your browser and exclude it from future lists.",
+                    viewProfile: "View Profile",
                 },
                 de: {
                     pageTitle: "finde, wer dich zu ihrem fan gemacht hat",
@@ -784,6 +805,7 @@
                         "dieses konto im browser speichern und nie wieder anzeigen",
                     hintText:
                         "Klicke auf das Kreuz (×), um das Konto dauerhaft in deinem Browser zu speichern und aus zukünftigen Listen auszuschließen.",
+                    viewProfile: "Profil",
                 },
             };
 
@@ -799,31 +821,19 @@
             const noRows = document.getElementById("no-rows");
             const resultsTable = document.querySelector("#results table");
 
-            let lang = "tr";
+            let lang = "en";
             let allRows = [];
             const accumulatedTextMap = new Map();
-            const DISMISSED_KEY = "ig-dismissed";
-            const CLICKED_KEY = "ig-clicked";
             let dismissedSet = new Set();
             let clickedSet = new Set();
-            try {
-                dismissedSet = new Set(
-                    JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]"),
-                );
-            } catch (_) {}
-            try {
-                clickedSet = new Set(
-                    JSON.parse(localStorage.getItem(CLICKED_KEY) || "[]"),
-                );
-            } catch (_) {}
 
             function t(key, vars) {
-                let text =
-                    I18N[lang]?.[key] !== undefined
-                        ? I18N[lang][key]
-                        : I18N.en?.[key] !== undefined
-                          ? I18N.en[key]
-                          : key;
+                let text = key;
+                if (I18N[lang] && I18N[lang][key] !== undefined) {
+                    text = I18N[lang][key];
+                } else if (I18N.en && I18N.en[key] !== undefined) {
+                    text = I18N.en[key];
+                }
                 if (vars) {
                     for (const [name, value] of Object.entries(vars)) {
                         text = text.replace("{" + name + "}", value);
@@ -833,16 +843,6 @@
             }
 
             function detectLang() {
-                const saved = localStorage.getItem("ig-fan-lang");
-                if (saved && I18N[saved]) {
-                    return saved;
-                }
-                const browser = (navigator.language || "en")
-                    .slice(0, 2)
-                    .toLowerCase();
-                if (I18N[browser]) {
-                    return browser;
-                }
                 return "en";
             }
 
@@ -892,7 +892,6 @@
 
             function setLang(code) {
                 lang = code;
-                localStorage.setItem("ig-fan-lang", code);
                 applyLang();
             }
 
@@ -1167,7 +1166,9 @@
                         continue;
                     }
                     const href =
-                        item.string_list_data?.[0]?.href ||
+                        (item.string_list_data &&
+                            item.string_list_data[0] &&
+                            item.string_list_data[0].href) ||
                         profileUrl(username);
                     following.push({ username, href });
                 }
@@ -1228,7 +1229,7 @@
                         return (
                             `<tr data-username="${uAttr}"${trClass}>` +
                             `<td>${u}</td>` +
-                            `<td><a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(profileUrl(row.username))}</a></td>` +
+                            `<td><a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(t("viewProfile"))}</a></td>` +
                             `<td class="dismiss-cell">` +
                             `<button class="dismiss-btn" data-username="${uAttr}" title="${escapeAttr(t("dismissBtnTitle"))}">` +
                             `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2 2l8 8m0-8L2 10"/></svg>` +
@@ -1256,16 +1257,6 @@
             function dismiss(username) {
                 dismissedSet.add(username.toLowerCase());
                 clickedSet.delete(username.toLowerCase());
-                try {
-                    localStorage.setItem(
-                        DISMISSED_KEY,
-                        JSON.stringify([...dismissedSet]),
-                    );
-                    localStorage.setItem(
-                        CLICKED_KEY,
-                        JSON.stringify([...clickedSet]),
-                    );
-                } catch (_) {}
                 allRows = allRows.filter(
                     (r) => r.username.toLowerCase() !== username.toLowerCase(),
                 );
@@ -1441,12 +1432,6 @@
                     if (tr) {
                         const username = tr.dataset.username;
                         clickedSet.add(username.toLowerCase());
-                        try {
-                            localStorage.setItem(
-                                CLICKED_KEY,
-                                JSON.stringify([...clickedSet]),
-                            );
-                        } catch (_) {}
                         tr.classList.add("last-clicked");
                     }
                 }
