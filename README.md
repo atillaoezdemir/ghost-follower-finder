@@ -1,42 +1,42 @@
-# fanın sanıp yalnız bıraktıkların 👻
+# who made you their fan 👻
 
-seni takip ediyorsun, onlar etmiyor. bunu artık biliyorsun.
+you follow them. they don't follow back. now you know.
 
-instagram'ın verdiği export dosyasını buraya at, kimlerle tek taraflı bir ilişki yaşadığını saniyeler içinde öğren. login yok, sunucu yok, hiçbir şey kaybolmuyor — her şey sadece tarayıcında.
-
----
-
-## ne yapıyor?
-
-takip ettiklerini ve seni takip edenleri karşılaştırıyor. geri takip etmeyenleri listeler. hepsi bu.
+drop your instagram export file here and find out who's been living rent-free in your following list in seconds. no login, no server, nothing leaves your browser.
 
 ---
 
-## özellikler
+## what does it do?
 
-- **tek dosya, sıfır kurulum** — HTML aç, kullan, kapat. terminal gerekmez.
-- **hiçbir yere gitmiyor** — verilerin tarayıcından çıkmıyor. sunucu yok, veritabanı yok, endişe yok.
-- **ZIP veya direkt JSON** — Instagram'ın gönderdiği şeyi olduğu gibi sürükle bırak.
-- **kalıcı gizleme** — "bunları zaten biliyordum, önemli değil" diyeceğin hesapları çarpıya bas, bir daha görünmez. tarayıcı kapatsan bile hatırlıyor.
-- **arama** — 300 kişi mi var listede? bul çıkar.
-- **3 dil** — Türkçe, English, Deutsch. başka dil mi istiyorsun? bize yaz.
+compares who you follow vs. who follows you back. lists the ones who didn't bother. that's it.
 
 ---
 
-## vizyon
+## features
 
-sosyal medya takip sayısı oyununa dönmüş durumda. bu araç o oyunu biraz daha şeffaf yapıyor.
-
-ama ağır almıyoruz. bu bir terapi uygulaması değil. listene bak, gül, geç.
-
----
-
-## nasıl kullanılır?
-
-1. [Instagram Accounts Center](https://accountscenter.instagram.com/info_and_permissions/dyi/) → bilgilerini dışa aktar → followers & following → JSON → tüm zamanlar
-2. indirilen `.zip` dosyasını (ya da içindeki JSON'ları) sayfaya sürükle bırak
-3. kolpaları gör
+- **single file, zero setup** — open the HTML, use it, close it. no terminal required.
+- **nothing leaves your browser** — your data stays local. no server, no database, no drama.
+- **ZIP or raw JSON** — just drag and drop whatever instagram gave you.
+- **permanent dismiss** — already know someone won't follow back and don't care? hit ×, they're gone for good. even survives closing the browser.
+- **search** — got 300 people on the list? find who you're looking for.
+- **3 languages** — Turkish, English, Deutsch. want another? open an issue.
 
 ---
 
-*sade, şeffaf, şakamatik.*
+## vision
+
+social media has turned into a follower count game. this tool makes that game a little more transparent.
+
+but we're not being dramatic about it. this isn't therapy. look at the list, laugh, move on.
+
+---
+
+## how to use
+
+1. go to [instagram accounts center](https://accountscenter.instagram.com/info_and_permissions/dyi/) → export your information → followers & following → JSON → all time
+2. drag & drop the `.zip` (or the JSON files inside it) onto the page
+3. see who's faking it
+
+---
+
+*simple, private, a little snarky.*
