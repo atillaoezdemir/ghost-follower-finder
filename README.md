@@ -6,6 +6,14 @@ drop your instagram export file here and find out who's been living rent-free in
 
 ---
 
+## too lazy to download the file?
+
+if downloading an HTML file and opening it sounds like rocket science to you, or you just don't want to deal with it, we got you covered. 
+
+just click here and use it directly in your browser: [atillaoezdemir.github.io/ghost-follower-finder](https://atillaoezdemir.github.io/ghost-follower-finder/)
+
+---
+
 ## what does it do?
 
 compares who you follow vs. who follows you back. lists the ones who didn't bother. that's it!
@@ -34,7 +42,7 @@ but we're not being dramatic about it. this isn't therapy. look at the list, lau
 ## how to use
 
 1. go to [instagram accounts center](https://accountscenter.instagram.com/info_and_permissions/dyi/) → export your information → followers & following → JSON → all time
-2. drag & drop the `.zip` (or the JSON files inside it) onto the page
+2. drag & drop the `.zip` (or the JSON files inside it) onto the page (or onto the website linked above)
 3. see who's faking it
 
 ---
